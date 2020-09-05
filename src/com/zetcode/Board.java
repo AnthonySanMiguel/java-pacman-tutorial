@@ -1,3 +1,5 @@
+// Full credit to http://zetcode.com/javagames/pacman/ for this code and tutorial
+
 package com.zetcode;
 
 import java.awt.BasicStroke;
@@ -52,9 +54,17 @@ public class Board extends JPanel implements ActionListener {
     private Image pacman3up, pacman3down, pacman3left, pacman3right;
     private Image pacman4up, pacman4down, pacman4left, pacman4right;
 
-    private int pacman_x, pacman_y, pacmand_x, pacmand_y;
+    // Store the x and y coordinates of the Pacman sprite.
+    private int pacman_x, pacman_y;
+    // The delta changes in horizontal and vertical directions
+    private int pacmand_x, pacmand_y;
+
     private int req_dx, req_dy, view_dx, view_dy;
 
+    // These numbers make up the maze. They provide information out of which we create the corners and the points.
+        // Number 1 is a left corner.
+        // Numbers 2, 4 and 8 represent top, right, and bottom corners respectively.
+        // Number 16 is a point. These numbers can be added, for example number 19 in the upper left corner means that the square will have top and left borders and a point (16 + 2 + 1).
     private final short levelData[] = {
             19, 26, 26, 26, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22,
             21, 0, 0, 0, 17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
@@ -81,23 +91,18 @@ public class Board extends JPanel implements ActionListener {
     private Timer timer;
 
     public Board() {
-
         loadImages();
         initVariables();
         initBoard();
     }
 
     private void initBoard() {
-
         addKeyListener(new TAdapter());
-
         setFocusable(true);
-
         setBackground(Color.black);
     }
 
     private void initVariables() {
-
         screenData = new short[N_BLOCKS * N_BLOCKS];
         mazeColor = new Color(5, 100, 5);
         d = new Dimension(400, 400);
@@ -116,15 +121,15 @@ public class Board extends JPanel implements ActionListener {
     @Override
     public void addNotify() {
         super.addNotify();
-
         initGame();
     }
 
+    // Counts the pacmanAnimPos variable which determines what pacman image is drawn. There are four pacman images.
     private void doAnim() {
-
         pacAnimCount--;
 
         if (pacAnimCount <= 0) {
+            // Constant which makes the animation a bit slower. Otherwise the pacman would open his mouth too fast.
             pacAnimCount = PAC_ANIM_DELAY;
             pacmanAnimPos = pacmanAnimPos + pacAnimDir;
 
@@ -135,13 +140,10 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void playGame(Graphics2D g2d) {
-
         if (dying) {
-
             death();
 
         } else {
-
             movePacman();
             drawPacman(g2d);
             moveGhosts(g2d);
@@ -150,13 +152,12 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void showIntroScreen(Graphics2D g2d) {
-
         g2d.setColor(new Color(0, 32, 48));
         g2d.fillRect(50, SCREEN_SIZE / 2 - 30, SCREEN_SIZE - 100, 50);
         g2d.setColor(Color.white);
         g2d.drawRect(50, SCREEN_SIZE / 2 - 30, SCREEN_SIZE - 100, 50);
 
-        String s = "Press s to start.";
+        String s = "Press 'S' to Start.";
         Font small = new Font("Helvetica", Font.BOLD, 14);
         FontMetrics metr = this.getFontMetrics(small);
 
@@ -166,7 +167,6 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void drawScore(Graphics2D g) {
-
         int i;
         String s;
 
@@ -180,7 +180,9 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
-    private void checkMaze() {
+    // Checks if there are any points left for the Pacman to eat. Number 16 stands for a point.
+    // If all points are consumed, we move to the next level. (In our case, we just restart the game.)
+        private void checkMaze() {
 
         short i = 0;
         boolean finished = true;
@@ -190,12 +192,10 @@ public class Board extends JPanel implements ActionListener {
             if ((screenData[i] & 48) != 0) {
                 finished = false;
             }
-
             i++;
         }
 
         if (finished) {
-
             score += 50;
 
             if (N_GHOSTS < MAX_GHOSTS) {
@@ -205,22 +205,20 @@ public class Board extends JPanel implements ActionListener {
             if (currentSpeed < maxSpeed) {
                 currentSpeed++;
             }
-
             initLevel();
         }
     }
 
     private void death() {
-
         pacsLeft--;
 
         if (pacsLeft == 0) {
             inGame = false;
         }
-
         continueLevel();
     }
 
+    // The ghosts move one square and then decide if they change the direction.
     private void moveGhosts(Graphics2D g2d) {
 
         short i;
@@ -228,11 +226,14 @@ public class Board extends JPanel implements ActionListener {
         int count;
 
         for (i = 0; i < N_GHOSTS; i++) {
+            // We continue only if we have finished moving one square.
             if (ghost_x[i] % BLOCK_SIZE == 0 && ghost_y[i] % BLOCK_SIZE == 0) {
+                // This line determines where the ghost is located; in which position/square. There are 225 theoretical positions. (A ghost cannot move over walls.)
                 pos = ghost_x[i] / BLOCK_SIZE + N_BLOCKS * (int) (ghost_y[i] / BLOCK_SIZE);
-
                 count = 0;
 
+                // If there is no obstacle on the left and the ghost is not already moving to the right, the ghost will move to the left.
+                // What does this code really mean? If the ghost enters a tunnel, he will continue in the same direction until he is out of the tunnel. Moving of ghosts is partly random. We do not apply this randomness inside long tunnels because the ghost might get stuck there.
                 if ((screenData[pos] & 1) == 0 && ghost_dx[i] != 1) {
                     dx[count] = -1;
                     dy[count] = 0;
@@ -274,28 +275,25 @@ public class Board extends JPanel implements ActionListener {
                     if (count > 3) {
                         count = 3;
                     }
-
                     ghost_dx[i] = dx[count];
                     ghost_dy[i] = dy[count];
                 }
 
             }
-
             ghost_x[i] = ghost_x[i] + (ghost_dx[i] * ghostSpeed[i]);
             ghost_y[i] = ghost_y[i] + (ghost_dy[i] * ghostSpeed[i]);
             drawGhost(g2d, ghost_x[i] + 1, ghost_y[i] + 1);
 
+            // If there is a collision between ghosts and Pacman, Pacman dies.
             if (pacman_x > (ghost_x[i] - 12) && pacman_x < (ghost_x[i] + 12)
                     && pacman_y > (ghost_y[i] - 12) && pacman_y < (ghost_y[i] + 12)
                     && inGame) {
-
                 dying = true;
             }
         }
     }
 
     private void drawGhost(Graphics2D g2d, int x, int y) {
-
         g2d.drawImage(ghost, x, y, this);
     }
 
@@ -305,6 +303,8 @@ public class Board extends JPanel implements ActionListener {
         short ch;
 
         if (req_dx == -pacmand_x && req_dy == -pacmand_y) {
+            // The req_dx and req_dy variables are determined in the TAdapter inner class.
+            // These variables are controlled with cursor keys.
             pacmand_x = req_dx;
             pacmand_y = req_dy;
             view_dx = pacmand_x;
@@ -315,6 +315,7 @@ public class Board extends JPanel implements ActionListener {
             pos = pacman_x / BLOCK_SIZE + N_BLOCKS * (int) (pacman_y / BLOCK_SIZE);
             ch = screenData[pos];
 
+            // If the pacman moves to a position with a point, we remove it from the maze and increase the score value.
             if ((ch & 16) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 score++;
@@ -332,7 +333,7 @@ public class Board extends JPanel implements ActionListener {
                 }
             }
 
-            // Check for standstill
+            // Pacman stops if he cannot move further in his current direction (e.g. walls or game boundaries).
             if ((pacmand_x == -1 && pacmand_y == 0 && (ch & 1) != 0)
                     || (pacmand_x == 1 && pacmand_y == 0 && (ch & 4) != 0)
                     || (pacmand_x == 0 && pacmand_y == -1 && (ch & 2) != 0)
@@ -348,7 +349,7 @@ public class Board extends JPanel implements ActionListener {
     private void drawPacman(Graphics2D g2d) {
 
         if (view_dx == -1) {
-            drawPacnanLeft(g2d);
+            drawPacmanLeft(g2d);
         } else if (view_dx == 1) {
             drawPacmanRight(g2d);
         } else if (view_dy == -1) {
@@ -358,6 +359,8 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
+    // There are four possible directions for Pacman, thus there are four images for all directions.
+    // The images are used to animate Pacman opening and closing his mouth.
     private void drawPacmanUp(Graphics2D g2d) {
 
         switch (pacmanAnimPos) {
@@ -394,7 +397,7 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
-    private void drawPacnanLeft(Graphics2D g2d) {
+    private void drawPacmanLeft(Graphics2D g2d) {
 
         switch (pacmanAnimPos) {
             case 1:
@@ -430,6 +433,12 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
+    // Draws the maze out of the numbers in the screenData array.
+    // Number 1 is a left border, 2 is a top border, 4 is a right border, 8 is a bottom border and 16 is a point.
+    // We simply go through all 225 squares in the maze.
+        // For example we have 9 in the screenData array.
+        // We have the first bit (1) and the fourth bit (8) set.
+        // So we draw a bottom and a left border on this particular square.
     private void drawMaze(Graphics2D g2d) {
 
         short i = 0;
@@ -441,6 +450,7 @@ public class Board extends JPanel implements ActionListener {
                 g2d.setColor(mazeColor);
                 g2d.setStroke(new BasicStroke(2));
 
+                // We draw a left border if the first bit of a number is set.
                 if ((screenData[i] & 1) != 0) {
                     g2d.drawLine(x, y, x, y + BLOCK_SIZE - 1);
                 }
@@ -463,14 +473,12 @@ public class Board extends JPanel implements ActionListener {
                     g2d.setColor(dotColor);
                     g2d.fillRect(x + 11, y + 11, 2, 2);
                 }
-
                 i++;
             }
         }
     }
 
     private void initGame() {
-
         pacsLeft = 3;
         score = 0;
         initLevel();
@@ -495,7 +503,6 @@ public class Board extends JPanel implements ActionListener {
         int random;
 
         for (i = 0; i < N_GHOSTS; i++) {
-
             ghost_y[i] = 4 * BLOCK_SIZE;
             ghost_x[i] = 4 * BLOCK_SIZE;
             ghost_dy[i] = 0;
@@ -506,7 +513,6 @@ public class Board extends JPanel implements ActionListener {
             if (random > currentSpeed) {
                 random = currentSpeed;
             }
-
             ghostSpeed[i] = validSpeeds[random];
         }
 
@@ -522,7 +528,6 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void loadImages() {
-
         ghost = new ImageIcon("src/resources/images/ghost.png").getImage();
         pacman1 = new ImageIcon("src/resources/images/pacman.png").getImage();
         pacman2up = new ImageIcon("src/resources/images/up1.png").getImage();
@@ -543,7 +548,6 @@ public class Board extends JPanel implements ActionListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         doDrawing(g);
     }
 
@@ -621,7 +625,6 @@ public class Board extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         repaint();
     }
 }

@@ -1,3 +1,5 @@
+// Full credit to http://zetcode.com/javagames/pacman/ for this code and tutorial
+
 package com.zetcode;
 
 import java.awt.EventQueue;
