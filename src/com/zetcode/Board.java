@@ -27,7 +27,7 @@ public class Board extends JPanel implements ActionListener {
     private final Font smallFont = new Font("Helvetica", Font.BOLD, 14);
 
     private Image ii;
-    private final Color dotColor = new Color(192, 192, 0);
+    private final Color dotColor = new Color(255, 101, 0);
     private Color mazeColor;
 
     private boolean inGame = false;
@@ -75,17 +75,17 @@ public class Board extends JPanel implements ActionListener {
     private final short levelData[] = {
             19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22,
             17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
+            17, 16, 20, 0, 17, 16, 16, 16, 16, 16, 20, 0, 17, 16, 20,
             17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
             25, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28
     };
@@ -111,7 +111,7 @@ public class Board extends JPanel implements ActionListener {
 
     private void initVariables() {
         screenData = new short[N_BLOCKS * N_BLOCKS];
-        mazeColor = new Color(5, 100, 5);
+        mazeColor = new Color(0, 101, 255);
         d = new Dimension(400, 400);
         ghost_x = new int[MAX_GHOSTS];
         ghost_dx = new int[MAX_GHOSTS];
@@ -535,7 +535,7 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void loadImages() {
-        ghost = new ImageIcon("src/resources/images/ghost.png").getImage();
+        ghost = new ImageIcon("src/resources/images/ghost2.png").getImage();
         pacman1 = new ImageIcon("src/resources/images/pacman.png").getImage();
         pacman2up = new ImageIcon("src/resources/images/up1.png").getImage();
         pacman3up = new ImageIcon("src/resources/images/up2.png").getImage();
@@ -549,7 +549,6 @@ public class Board extends JPanel implements ActionListener {
         pacman2right = new ImageIcon("src/resources/images/right1.png").getImage();
         pacman3right = new ImageIcon("src/resources/images/right2.png").getImage();
         pacman4right = new ImageIcon("src/resources/images/right3.png").getImage();
-
     }
 
     @Override
